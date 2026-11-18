@@ -6,9 +6,10 @@
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[node name="Trail" type="Line2D" unique_id=1115313834 groups=["pp"]]
+[node name="Trail" type="Line2D" unique_id=1115313834]
 top_level = true
 width = 5.0
 width_curve = SubResource("Curve_5uqgn")
+default_color = Color(0, 1, 1, 1)
 script = ExtResource("1_t6xsy")
 MAX_LENGTH = 20
