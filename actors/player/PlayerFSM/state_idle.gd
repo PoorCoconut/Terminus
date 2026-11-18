@@ -6,8 +6,10 @@ class_name StateIdle
 func enterState():
 	pass
 
-func updateState(_delta : float):
-	PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0, PLAYER.FRICTION)
+func updateState(delta : float):
+	# Decelerating: Brake held = hard stop, otherwise gentle coast
+	var decel = PLAYER.BRAKE_DECEL if Input.is_action_pressed("break") else PLAYER.COAST_DECEL
+	PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0, decel * delta)
 	determine_direction()
 	
 	if Input.is_action_pressed("charge"):

@@ -43,9 +43,7 @@ func updateState(_delta : float):
 			
 		else: # Player on flat ground, decelerate them
 			DUST_PARTICLE.emitting = false
-			if Input.is_action_pressed("charge") and Input.is_action_pressed("break"):
-				transition.emit(self, "Anchor")
-			elif Input.is_action_pressed("charge"):
+			if Input.is_action_pressed("charge"):
 				transition.emit(self, "Charge")
 			else: 
 				transition.emit(self, "Idle")

@@ -6,14 +6,10 @@ class_name StateFall
 func enterState(): 
 	pass
 
-func updateState(delta : float):
+func updateState(_delta : float):
 	PLAYER.previous_velocity = PLAYER.velocity
 	
 	var fall_speed_before_impact = abs(PLAYER.velocity.y)
-	
-	# Mid-air steering: Brake bleeds horizontal momentum so landings can be adjusted
-	if Input.is_action_pressed("break") and not PLAYER.air_locked:
-		PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0.0, PLAYER.AIR_BRAKE_DECEL * delta)
 	
 	# Stun only for UNintended falls (walking off a ledge). A gravity-flip arc
 	# is a deliberate fall, so it never stuns on landing.
@@ -50,10 +46,9 @@ func updateState(delta : float):
 		
 		PLAYER.end_arc()
 		
-		# Landed: carry on running / anchor if the inputs are still held
-		if Input.is_action_pressed("charge") and Input.is_action_pressed("break"):
-			transition.emit(self, "Anchor")
-		elif Input.is_action_pressed("charge"):
+		# Landed: carry on running if Accelerate is still held
+		# (Anchor is only entered from Charge, once the run-up requirements are met)
+		if Input.is_action_pressed("charge"):
 			transition.emit(self, "Charge")
 		else:
 			transition.emit(self, "Idle")
