@@ -1,3 +1,7 @@
 [gd_resource type="Theme" format=3 uid="uid://8a4wq73qytau"]
 
+[ext_resource type="FontFile" uid="uid://dtgpgdcpbkq5q" path="res://game_assets/fonts/aquarius/Aquarius-RegularMono.ttf" id="1_e7bfs"]
+
 [resource]
+default_font = ExtResource("1_e7bfs")
+default_font_size = 8

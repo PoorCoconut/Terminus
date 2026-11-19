@@ -1,7 +1,7 @@
-extends Control
+extends CanvasLayer
 
-@onready var button_play: Button = %Button_Play
-@onready var button_settings: Button = %Button_Settings
+@onready var button_play: TextureButton = %Button_Play
+@onready var button_settings: TextureButton = %Button_Settings
 @onready var button_credits: Button = %Button_Credits
 @onready var button_exit: Button = %Button_Exit
 
