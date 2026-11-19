@@ -32,6 +32,7 @@ func updateState(_delta : float):
 		if not added_particles_flag:
 			LAND_PARTICLE.global_position = PLAYER.global_position
 			LAND_PARTICLE.global_position.y += 5 * PLAYER.gravity_dir
+			LAND_PARTICLE.rotation = 0.0 if PLAYER.gravity_dir > 0.0 else PI
 			get_tree().get_first_node_in_group("world").add_child(LAND_PARTICLE)
 			added_particles_flag = true
 		

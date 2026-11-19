@@ -22,6 +22,7 @@
 [ext_resource type="AudioStream" uid="uid://bqe2fetf5ab2h" path="res://sound/sfx/sfx_steam_hiss_short.mp3" id="19_otn2r"]
 [ext_resource type="AudioStream" uid="uid://bd66ogckftf5n" path="res://sound/sfx/sfx_steam_hiss_long.mp3" id="20_ctwkf"]
 [ext_resource type="AudioStream" uid="uid://cs5b2tlgqkmh6" path="res://sound/sfx/sfx_gritty_bang.mp3" id="21_ctwkf"]
+[ext_resource type="PackedScene" uid="uid://btbcu7i2ahwq5" path="res://systems/HUD/player_hud.tscn" id="23_lj3dd"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lsqbn"]
 radius = 3.0
@@ -43,7 +44,7 @@ JUMP_MAX_VELOCITY = -125.0
 BOUNCE_FORCE_Y = -40.0
 STUN_FALL_SPEED = 150.0
 FLIP_TIMING = 1
-GAUGE_COOLDOWN_RATE = 4.0
+GAUGE_COOLDOWN_RATE = 10.0
 
 [node name="StateLabel" type="Label" parent="." unique_id=204877862]
 unique_name_in_owner = true
@@ -170,3 +171,5 @@ bus = &"SFX"
 unique_name_in_owner = true
 stream = ExtResource("21_ctwkf")
 bus = &"SFX"
+
+[node name="PlayerHUD" parent="." unique_id=1878162404 instance=ExtResource("23_lj3dd")]

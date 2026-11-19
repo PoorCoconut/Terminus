@@ -3,6 +3,10 @@ class_name StateFall
 
 #@export var PLAYER : Player
 
+## Hard-land particle scene. Leave empty to reuse the one assigned on the StunFall state.
+@export var LAND_PARTICLE_PATH : PackedScene
+@onready var DUST_PARTICLE = %Particle_Dust
+
 func enterState(): 
 	pass
 
@@ -44,6 +48,10 @@ func updateState(_delta : float):
 			intensity = clamp(intensity, 0.0, 5.0) 
 			GameManager.do_camera_shake(intensity, 0.3)
 		
+		# Landing after a gravity switch, hard enough -> StunFall-style landing effects
+		if PLAYER.switched_in_arc and fall_speed_before_impact >= PLAYER.HARD_LAND_SPEED:
+			_hard_land_effects()
+		
 		PLAYER.end_arc()
 		
 		# Landed: carry on running if Accelerate is still held
@@ -52,3 +60,24 @@ func updateState(_delta : float):
 			transition.emit(self, "Charge")
 		else:
 			transition.emit(self, "Idle")
+
+func _hard_land_effects() -> void:
+	PLAYER.SFX_LAND.pitch_scale = randf_range(0.8, 1.2)
+	PLAYER.SFX_LAND.play()
+	
+	# Short dust burst
+	DUST_PARTICLE.emitting = true
+	get_tree().create_timer(0.25).timeout.connect(func(): DUST_PARTICLE.emitting = false)
+	
+	# Land particle (own export, else borrow StunFall's)
+	var scene : PackedScene = LAND_PARTICLE_PATH
+	if scene == null:
+		var stun = get_parent().get_node_or_null("StunFall")
+		if stun != null:
+			scene = stun.LAND_PARTICLE_PATH
+	var world = get_tree().get_first_node_in_group("world")
+	if scene != null and world != null:
+		var p = scene.instantiate()
+		p.global_position = PLAYER.global_position + Vector2(0.0, 5.0 * PLAYER.gravity_dir)
+		p.rotation = 0.0 if PLAYER.gravity_dir > 0.0 else PI
+		world.add_child(p)

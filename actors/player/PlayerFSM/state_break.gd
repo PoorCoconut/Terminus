@@ -1,13 +1,16 @@
 extends "res://systems/FSM/State.gd"
 class_name StateBreak
 
-#@export var PLAYER : Player
-@export var BRAKE_FRICTION : float = 700.0 # Huge friction to stop fast
-@export var HEAT_MULTIPLIER : float = 2.5 # How fast speed converts to heat
+# GROUND BRAKE: Brake held while grounded, moving, and NOT accelerating.
+#  - Decelerates at PLAYER.BRAKE_DECEL
+#  - Fills the Heat Gauge from your current speed (PLAYER.BRAKE_HEAT_MULTIPLIER)
+#  - Plays the brake sfx + friction sparks
+#  - Heat hitting 100% -> Overheat Malfunction launch (same as Anchor)
 
 @onready var FRICTIONSPARK_PARTICLE := %Particle_FrictionSpark
 
 func enterState():
+	PLAYER.is_braking = true
 	PLAYER.SFX_CHARGE.pitch_scale = randf_range(0.8, 1.2)
 	PLAYER.SFX_CHARGE.play()
 	FRICTIONSPARK_PARTICLE.emitting = true
@@ -21,59 +24,38 @@ func updateState(delta : float):
 			transition.emit(self, "StunFall")
 			return
 	
-	#OVERHEAT
-	if PLAYER.is_overheated:
-		
-		if !PLAYER.SFX_STEAM_LONG.playing:
-			PLAYER.SFX_STEAM_LONG.pitch_scale = randf_range(0.9, 1.2)
-			PLAYER.SFX_STEAM_LONG.play()
-		
-		PLAYER.STEAM_PARTICLE.amount = 30
-		PLAYER.STEAM_PARTICLE.emitting = true
-		
-		
-		if PLAYER.velocity.length() <= 10.0:
-			
-			transition.emit(self, "Idle")
-			
-	#NORMAL BREAK
-	else:
-		if Input.is_action_pressed("break"):
-			if !PLAYER.SFX_STEAM_SHORT.playing:
-				PLAYER.SFX_STEAM_SHORT.pitch_scale = randf_range(0.8, 1.2)
-				PLAYER.SFX_STEAM_SHORT.play()
-			
-			
-			var current_speed = abs(PLAYER.velocity.x)
-			
-			#Fill the gauge based on how fast they are currently sliding
-			PLAYER.current_brake_gauge += (current_speed * HEAT_MULTIPLIER) * delta
-			
-			#Tell the rest of the game the gauge changed!
-			Events.brake_gauge_updated.emit(PLAYER.current_brake_gauge, PLAYER.MAX_BRAKE_GAUGE)
-			
-			#Check for Overheat
-			if PLAYER.current_brake_gauge >= PLAYER.MAX_BRAKE_GAUGE:
-				PLAYER.is_overheated = true
-				PLAYER.overheat_timer = PLAYER.OVERHEAT_PUNISH_TIME
-				print("BRAKES OVERHEATED! ZERO FRICTION!")
-			
-			#Decelerate
-			PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0, BRAKE_FRICTION * delta)
-			PLAYER.move_and_slide()
-			
-			if abs(PLAYER.velocity.x) <= 0:
-				PLAYER.velocity.x = 0
-				transition.emit(self, "Idle")
-				return
-			
-		else:
-			if abs(PLAYER.velocity.x) > 0:
-				transition.emit(self, "Fall")
-			else:
-				transition.emit(self, "Idle")
+	# Accelerate pressed -> back to running (Anchor gating lives in Charge)
+	if Input.is_action_pressed("charge"):
+		transition.emit(self, "Charge")
+		return
+	
+	# Brake released, or fully stopped
+	if not Input.is_action_pressed("break") or abs(PLAYER.velocity.x) <= 0.0:
+		transition.emit(self, "Idle")
+		return
+	
+	if !PLAYER.SFX_STEAM_SHORT.playing:
+		PLAYER.SFX_STEAM_SHORT.pitch_scale = randf_range(0.8, 1.2)
+		PLAYER.SFX_STEAM_SHORT.play()
+	
+	# Fill the gauge based on how fast they are currently sliding
+	PLAYER.current_brake_gauge += abs(PLAYER.velocity.x) * PLAYER.BRAKE_HEAT_MULTIPLIER * delta
+	
+	# OVERHEAT MALFUNCTION
+	if PLAYER.current_brake_gauge >= PLAYER.MAX_BRAKE_GAUGE:
+		PLAYER.current_brake_gauge = PLAYER.MAX_BRAKE_GAUGE
+		PLAYER.jump_kind = Player.JumpKind.OVERHEAT
+		transition.emit(self, "Jump")
+		return
+	
+	# Decelerate
+	PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0, PLAYER.BRAKE_DECEL * delta)
+	PLAYER.move_and_slide()
+	
+	if not PLAYER.is_on_floor():
+		transition.emit(self, "Fall")
 
 func exitState():
+	PLAYER.is_braking = false
 	PLAYER.SFX_CHARGE.stop()
-	PLAYER.STEAM_PARTICLE.emitting = false
 	FRICTIONSPARK_PARTICLE.emitting = false

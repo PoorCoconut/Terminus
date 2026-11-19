@@ -17,9 +17,13 @@ enum FlipTiming { APEX, IMMEDIATE, DELAYED }
 @export_category("GROUND BRAKING")
 ## Horizontal deceleration (px/s^2) while grounded, NOT accelerating, and NOT braking.
 ## Higher = momentum dies faster after landing/anchor. Lower = longer slides.
-@export var COAST_DECEL : float = 500.0
+@export var COAST_DECEL : float = 250.0
 ## Horizontal deceleration (px/s^2) while grounded, not accelerating, and Brake is held.
-@export var BRAKE_DECEL : float = 1500.0
+@export var BRAKE_DECEL : float = 700.0
+## Minimum |velocity.x| for Brake to engage the Break state (heat, sparks, sfx).
+@export var BRAKE_MIN_SPEED : float = 5.0
+## Heat gained per (px/s of speed * second) while ground-braking. Faster slide = more heat.
+@export var BRAKE_HEAT_MULTIPLIER : float = 2.5
 
 @export_category("ANCHOR REQUIREMENTS")
 ## Minimum |velocity.x| you must be running at before Anchor is allowed.
@@ -76,6 +80,9 @@ var jump_charge_strength : float = 0.0
 @export var FLIP_SHAKE : float = 0.0
 ## Flip the sprite vertically when gravity is inverted.
 @export var FLIP_SPRITE : bool = true
+## Landing speed (px/s) at or above which a landing after a gravity switch plays the
+## hard-land dust, particles and sound (like a StunFall landing). Higher = rarer.
+@export var HARD_LAND_SPEED : float = 250.0
 
 #HEAT GAUGE
 @export_category("HEAT GAUGE")
@@ -87,12 +94,14 @@ var jump_charge_strength : float = 0.0
 
 var current_brake_gauge : float = 0.0
 var is_anchoring : bool = false  # Set by StateAnchor
+var is_braking : bool = false    # Set by StateBreak (ground brake)
 var is_overheated : bool = false # True from Overheat launch until landing
 
 #GRAVITY FLIP / ARC
 var gravity_dir : float = 1.0 # 1 = pulled down the screen, -1 = pulled up the screen
 var in_arc : bool = false     # True from jump until landing (suppresses stun-fall on deliberate falls)
 var hang_timer : float = 0.0  # Counts down zero-gravity hang after an apex flip
+var switched_in_arc : bool = false # Gravity was actually flipped during this arc
 var jump_kind : JumpKind = JumpKind.STANDARD # Set by whoever transitions to "Jump"
 
 var direction : float = 1.0
@@ -130,7 +139,7 @@ func _physics_process(delta: float) -> void:
 	
 	previous_velocity = velocity
 	#Cooldown (only while NOT anchored)
-	if current_brake_gauge > 0 and not is_anchoring:
+	if current_brake_gauge > 0 and not is_anchoring and not is_braking:
 		STEAM_PARTICLE.amount = 2
 		STEAM_PARTICLE.emitting = true
 		
@@ -160,6 +169,7 @@ func flip_gravity() -> void:
 # zero_vy = true when flipping at the apex (vertical speed is snapped to 0 first).
 func do_gravity_switch(zero_vy : bool) -> void:
 	flip_gravity()
+	switched_in_arc = true
 	velocity.x *= FLIP_HORIZONTAL_RETAIN
 	if zero_vy:
 		velocity.y = 0.0
@@ -171,6 +181,7 @@ func do_gravity_switch(zero_vy : bool) -> void:
 # Call when an arc ends (landing / stun) to clear arc-only flags.
 func end_arc() -> void:
 	in_arc = false
+	switched_in_arc = false
 	hang_timer = 0.0
 	if is_overheated:
 		is_overheated = false

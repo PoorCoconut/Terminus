@@ -7,13 +7,14 @@ func enterState():
 	pass
 
 func updateState(delta : float):
-	# Decelerating: Brake held = hard stop, otherwise gentle coast
-	var decel = PLAYER.BRAKE_DECEL if Input.is_action_pressed("break") else PLAYER.COAST_DECEL
-	PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0, decel * delta)
+	# Gentle coast. Holding Brake while still moving hands over to the Break state.
+	PLAYER.velocity.x = move_toward(PLAYER.velocity.x, 0, PLAYER.COAST_DECEL * delta)
 	determine_direction()
 	
 	if Input.is_action_pressed("charge"):
 		transition.emit(self, "Charge")
+	elif Input.is_action_pressed("break") and abs(PLAYER.velocity.x) > PLAYER.BRAKE_MIN_SPEED:
+		transition.emit(self, "Break")
 	if !PLAYER.is_on_floor():
 		transition.emit(self, "Fall")
 	PLAYER.move_and_slide()

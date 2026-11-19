@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://byj6xdlr830d7" path="res://game_assets/Caves of Gallet 3/brick.png" id="1_ko2b3"]
 [ext_resource type="PackedScene" uid="uid://v8l4x05oj6kr" path="res://actors/player/player.tscn" id="2_knprt"]
 [ext_resource type="PackedScene" uid="uid://b3fobc4mms4jw" path="res://systems/World Camera Component/world_camera_component.tscn" id="3_65sla"]
-[ext_resource type="PackedScene" uid="uid://btbcu7i2ahwq5" path="res://systems/HUD/player_hud.tscn" id="4_65sla"]
+[ext_resource type="PackedScene" uid="uid://b5kib01h7s7am" path="res://systems/Camera Limit Zone Component/camera_limit_zone_component.tscn" id="5_65sla"]
 [ext_resource type="PackedScene" uid="uid://bkrih4wj555nw" path="res://systems/Pause Menu Component/pause_menu_component.tscn" id="5_hn1mc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hn1mc"]
@@ -398,6 +398,12 @@ terrain_set_0/terrain_0/name = "Terrain 0"
 terrain_set_0/terrain_0/color = Color(0.7241896, 0, 0.20730674, 1)
 sources/0 = SubResource("TileSetAtlasSource_hn1mc")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_knprt"]
+size = Vector2(320, 180)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hn1mc"]
+size = Vector2(640, 180)
+
 [node name="World_Tether" type="Node2D" unique_id=602934352 groups=["world"]]
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=806498220]
@@ -405,13 +411,26 @@ tile_map_data = PackedByteArray("AAAAABYAAAAAAAQAAAABABYAAAAGAAIAAAACABYAAAAHAAI
 tile_set = SubResource("TileSet_4kxuq")
 
 [node name="Player" parent="." unique_id=1682234680 instance=ExtResource("2_knprt")]
-position = Vector2(158, 162)
+position = Vector2(136, 153)
 
 [node name="WorldCameraComponent" parent="." unique_id=1725945058 node_paths=PackedStringArray("target") instance=ExtResource("3_65sla")]
-camera_mode = 0
 target = NodePath("../Player")
-
-[node name="PlayerHUD" parent="." unique_id=1878162404 instance=ExtResource("4_65sla")]
 
 [node name="PauseMenuComponent" parent="." unique_id=547681459 instance=ExtResource("5_hn1mc")]
 visible = false
+
+[node name="C1" parent="." unique_id=276472449 instance=ExtResource("5_65sla")]
+
+[node name="CollisionShape2D" parent="C1" index="0" unique_id=282465000]
+position = Vector2(160, 90)
+shape = SubResource("RectangleShape2D_knprt")
+
+[node name="C2" parent="." unique_id=397643050 instance=ExtResource("5_65sla")]
+position = Vector2(320, 0)
+
+[node name="CollisionShape2D" parent="C2" index="0" unique_id=282465000]
+position = Vector2(320, 90)
+shape = SubResource("RectangleShape2D_hn1mc")
+
+[editable path="C1"]
+[editable path="C2"]

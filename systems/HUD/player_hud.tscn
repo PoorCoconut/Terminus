@@ -1,52 +1,48 @@
 [gd_scene format=3 uid="uid://btbcu7i2ahwq5"]
 
 [ext_resource type="Script" uid="uid://dax15qxwg4uwj" path="res://systems/HUD/player_hud.gd" id="1_cadqa"]
+[ext_resource type="Texture2D" uid="uid://d4l1sg7x7hm8n" path="res://systems/HUD/heat_bar.png" id="2_rhs8c"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cadqa"]
-bg_color = Color(0, 0, 0, 1)
+[sub_resource type="Theme" id="Theme_knprt"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rhs8c"]
-bg_color = Color(1, 1, 1, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0, 0, 0, 1)
+[sub_resource type="AtlasTexture" id="AtlasTexture_i0keh"]
+atlas = ExtResource("2_rhs8c")
+region = Rect2(36, 0, 36, 36)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i0keh"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
+[sub_resource type="AtlasTexture" id="AtlasTexture_2gw1j"]
+atlas = ExtResource("2_rhs8c")
+region = Rect2(0, 0, 36, 36)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2gw1j"]
-bg_color = Color(1, 1, 1, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0, 0, 0, 0)
+[sub_resource type="Theme" id="Theme_65sla"]
 
-[node name="PlayerHUD" type="CanvasLayer" unique_id=1878162404]
+[sub_resource type="AtlasTexture" id="AtlasTexture_rhs8c"]
+atlas = ExtResource("2_rhs8c")
+region = Rect2(0, 0, 36, 36)
+
+[node name="PlayerHUD" type="Node2D" unique_id=659492381]
 script = ExtResource("1_cadqa")
 
 [node name="BarContainer" type="Node2D" parent="." unique_id=1156197549]
 
-[node name="WhiteBar" type="ProgressBar" parent="BarContainer" unique_id=1739072480]
+[node name="WhiteBar" type="TextureProgressBar" parent="BarContainer" unique_id=1224901033]
 unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 136.0
-offset_bottom = 24.0
-theme_override_styles/background = SubResource("StyleBoxFlat_cadqa")
-theme_override_styles/fill = SubResource("StyleBoxFlat_rhs8c")
-show_percentage = false
+offset_left = -18.0
+offset_top = -18.0
+offset_right = 18.0
+offset_bottom = 18.0
+theme = SubResource("Theme_knprt")
+fill_mode = 4
+texture_under = SubResource("AtlasTexture_i0keh")
+texture_progress = SubResource("AtlasTexture_2gw1j")
 
-[node name="BarChaser" type="ProgressBar" parent="BarContainer" unique_id=429415386]
+[node name="BarChaser" type="TextureProgressBar" parent="BarContainer" unique_id=2116926788]
 unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 136.0
-offset_bottom = 24.0
-theme_override_styles/background = SubResource("StyleBoxFlat_i0keh")
-theme_override_styles/fill = SubResource("StyleBoxFlat_2gw1j")
-show_percentage = false
+offset_left = -18.0
+offset_top = -18.0
+offset_right = 18.0
+offset_bottom = 18.0
+theme = SubResource("Theme_65sla")
+fill_mode = 4
+texture_progress = SubResource("AtlasTexture_rhs8c")
 
 [node name="Timer" type="Timer" parent="." unique_id=277835653]
