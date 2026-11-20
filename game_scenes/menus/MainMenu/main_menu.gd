@@ -11,6 +11,7 @@ extends CanvasLayer
 
 @onready var timer_label: Label = %TimerLabel
 @export var player : Player
+@onready var loading: AnimationPlayer = $Loading
 
 @export_file("*.tscn") var next_level_path : String
 
@@ -105,8 +106,8 @@ func _on_nuke_button_pressed() -> void:
 	GameManager.delete_save()
 	
 	# 5. Reload the scene so the Player & Camera physically reset to the start
-	get_tree().paused = false
-	get_tree().reload_current_scene()
+	
+	loading.play("in")
 
 
 func _on_button_1080p_pressed() -> void:
@@ -134,3 +135,10 @@ func _on_button_exclusive_fullscreen_pressed() -> void:
 @onready var action_list_container : GridContainer = %RebindContainer
 func _on_controls_reset_pressed() -> void:
 	SettingsManager.reset_keybinds_to_default()
+
+
+func _on_loading_animation_finished(anim_name: StringName) -> void:
+	print("test")
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+	pass # Replace with function body.

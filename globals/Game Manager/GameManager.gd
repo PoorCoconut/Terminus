@@ -99,7 +99,8 @@ func do_camera_shake(intensity:float, time:float):
 		camera_tween.tween_method(camera.startCameraShake, intensity, 1.0, time)
 		camera.startCameraShake(intensity)
 		await get_tree().create_timer(time).timeout
-		camera.resetCameraOffset()
+		if camera:
+			camera.resetCameraOffset()
 
 func move_camera_to_player(player_pos : Vector2):
 	if get_tree().get_first_node_in_group("camera"):

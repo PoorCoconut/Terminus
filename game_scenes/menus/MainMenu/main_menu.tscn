@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://cxjik30ut0s3y" path="res://systems/Rebind Button Script Module/RebindButton.gd" id="2_c5njb"]
 [ext_resource type="Shader" uid="uid://culs8n47dmngk" path="res://vfx/shaders/static.gdshader" id="4_kcaeb"]
 [ext_resource type="Shader" uid="uid://b0h5u2t3ua8lx" path="res://vfx/shaders/crt.gdshader" id="5_x2ujj"]
+[ext_resource type="AudioStream" uid="uid://62no3sfxb22y" path="res://sound/sfx/sfx_static.mp3" id="6_abyub"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4kxuq"]
 atlas = ExtResource("2_3phpx")
@@ -39,6 +40,67 @@ shader = ExtResource("5_x2ujj")
 shader_parameter/brightnessMult = 1.0000000149012
 shader_parameter/wiggleMult = 0.009999999747
 shader_parameter/chromaticAberrationOffset = 0.00999999975
+
+[sub_resource type="Animation" id="Animation_abyub"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Shader:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Static:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_6hcsl"]
+resource_name = "in"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Shader:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Static:playing")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.46666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_b1bdr"]
+_data = {
+&"RESET": SubResource("Animation_abyub"),
+&"in": SubResource("Animation_6hcsl")
+}
 
 [node name="MainMenu" type="CanvasLayer" unique_id=1317839880]
 process_mode = 3
@@ -434,6 +496,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Static" type="AudioStreamPlayer" parent="." unique_id=1856764460]
+stream = ExtResource("6_abyub")
+bus = &"SFX"
+
+[node name="Loading" type="AnimationPlayer" parent="." unique_id=1662214457]
+libraries/ = SubResource("AnimationLibrary_b1bdr")
+
 [connection signal="pressed" from="ButtonContainerSizer/ButtonContainer/Button_Play" to="." method="_on_button_play_pressed"]
 [connection signal="pressed" from="ButtonContainerSizer/ButtonContainer/Button_Settings" to="." method="_on_button_settings_pressed"]
 [connection signal="pressed" from="ButtonContainerSizer/ButtonContainer/Button_Credits" to="." method="_on_button_credits_pressed"]
@@ -451,3 +520,4 @@ grow_vertical = 2
 [connection signal="pressed" from="SettingsContainer/SettingsTabs/ViewportSettings/VBoxContainer/WindowMode/VBoxContainer/Button_ExclusiveFullscreen" to="." method="_on_button_exclusive_fullscreen_pressed"]
 [connection signal="pressed" from="SettingsContainer/SettingsTabs/ControlsSettings/VBoxContainer/ControlsReset" to="." method="_on_controls_reset_pressed"]
 [connection signal="pressed" from="SettingsContainer/Back/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="animation_finished" from="Loading" to="." method="_on_loading_animation_finished"]
