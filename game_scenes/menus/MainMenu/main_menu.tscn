@@ -7,6 +7,17 @@
 [ext_resource type="Shader" uid="uid://b0h5u2t3ua8lx" path="res://vfx/shaders/crt.gdshader" id="5_x2ujj"]
 [ext_resource type="AudioStream" uid="uid://62no3sfxb22y" path="res://sound/sfx/sfx_static.mp3" id="6_abyub"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3phpx"]
+shader = ExtResource("4_kcaeb")
+shader_parameter/amount = 40.0
+shader_parameter/transparency = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_abyub"]
+shader = ExtResource("5_x2ujj")
+shader_parameter/brightnessMult = 1.0000000149012
+shader_parameter/wiggleMult = 0.009999999747
+shader_parameter/chromaticAberrationOffset = 0.00999999975
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_4kxuq"]
 atlas = ExtResource("2_3phpx")
 region = Rect2(0, 32, 288, 64)
@@ -29,17 +40,6 @@ expand_margin_left = 5.0
 expand_margin_right = 5.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3phpx"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3phpx"]
-shader = ExtResource("4_kcaeb")
-shader_parameter/amount = 40.0
-shader_parameter/transparency = 1.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_abyub"]
-shader = ExtResource("5_x2ujj")
-shader_parameter/brightnessMult = 1.0000000149012
-shader_parameter/wiggleMult = 0.009999999747
-shader_parameter/chromaticAberrationOffset = 0.00999999975
 
 [sub_resource type="Animation" id="Animation_abyub"]
 length = 0.001
@@ -106,6 +106,33 @@ _data = {
 process_mode = 3
 script = ExtResource("1_h6sl1")
 
+[node name="Shader" type="Control" parent="." unique_id=1037402694]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Static" type="ColorRect" parent="Shader" unique_id=1710063856]
+material = SubResource("ShaderMaterial_3phpx")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CRT" type="ColorRect" parent="Shader" unique_id=172091519]
+material = SubResource("ShaderMaterial_abyub")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=212658100]
 position = Vector2(160, 56)
 texture = SubResource("AtlasTexture_4kxuq")
@@ -124,8 +151,8 @@ vertical_alignment = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 128.0
-offset_bottom = -20.0
+offset_top = 134.0
+offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -468,33 +495,6 @@ grow_horizontal = 0
 size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "BACK"
-
-[node name="Shader" type="Control" parent="." unique_id=1037402694]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Static" type="ColorRect" parent="Shader" unique_id=1710063856]
-material = SubResource("ShaderMaterial_3phpx")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="CRT" type="ColorRect" parent="Shader" unique_id=172091519]
-material = SubResource("ShaderMaterial_abyub")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Static" type="AudioStreamPlayer" parent="." unique_id=1856764460]
 stream = ExtResource("6_abyub")
