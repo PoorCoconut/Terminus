@@ -9,15 +9,46 @@ extends CanvasLayer
 @onready var slider_mu_vol: HSlider = %Slider_MuVol
 @onready var slider_s_vol: HSlider = %Slider_SVol
 
+@onready var timer_label: Label = %TimerLabel
+@export var player : Player
+
 @export_file("*.tscn") var next_level_path : String
 
 func _ready() -> void:
+	show()
 	slider_ma_vol.value = SettingsManager.master_vol
 	slider_mu_vol.value = SettingsManager.music_vol
 	slider_s_vol.value = SettingsManager.sfx_vol
+	
+	await get_tree().process_frame
+	await get_tree().physics_frame
+	
+	get_tree().paused = true
+
+func _process(_delta: float) -> void:
+	timer_label.text = GameManager.get_formatted_time()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause"):
+		if visible:
+			resume_game()
+		else:
+			pause_game()
+
+func pause_game() -> void:
+	if player:
+		GameManager.save_player_position(player.global_position)
+	get_tree().paused = true
+	GameManager.stop_timer(true)
+	show()
+
+func resume_game() -> void:
+	hide()
+	get_tree().paused = false
+	GameManager.start_timer()
 
 func _on_button_play_pressed() -> void:
-	GameManager.load_next_level(next_level_path)
+	resume_game()
 
 func _on_button_settings_pressed() -> void:
 	%SettingsContainer.show()
@@ -52,12 +83,12 @@ func _on_slider_s_vol_value_changed(value: float) -> void:
 	SettingsManager.save_settings()
 
 func _on_nuke_button_pressed() -> void:
-	#Reset ALL Settings to default, including player position
+	# 1. Reset confirmation UI
 	%WarningLabel.hide()
 	%NukeButton.hide()
 	%ResetButton.show()
 	
-	#RESETTING AUDIO
+	# 2. Reset Audio
 	SettingsManager.master_vol = 1.0
 	SettingsManager.music_vol = 1.0
 	SettingsManager.sfx_vol = 1.0
@@ -67,15 +98,15 @@ func _on_nuke_button_pressed() -> void:
 	slider_mu_vol.value = SettingsManager.music_vol
 	slider_s_vol.value = SettingsManager.sfx_vol
 	
-	#PLAYER POSITION [ALSO CALL YOUR "RESET PLAYER STATS" HERE]
-	# Check if the save file exists, and if it does, delete it forever.
-	var save_path = "user://savegame.json"
-	if FileAccess.file_exists(save_path):
-		DirAccess.remove_absolute(save_path)
-		print("Save data wiped! Next run starts from the bottom.")
-	
-	#RESET KEYBINDS
+	# 3. Reset Keybinds
 	SettingsManager.reset_keybinds_to_default()
+	
+	# 4. Wipe save file, cached player position, AND GameManager.elapsed_time
+	GameManager.delete_save()
+	
+	# 5. Reload the scene so the Player & Camera physically reset to the start
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 
 func _on_button_1080p_pressed() -> void:

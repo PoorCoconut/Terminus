@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://b6rwu6r4il3so" path="res://game_scenes/menus/MainMenu/main_menu.gd" id="1_h6sl1"]
 [ext_resource type="Texture2D" uid="uid://uwl6pija5pia" path="res://game_assets/ui_sprite.png" id="2_3phpx"]
 [ext_resource type="Script" uid="uid://cxjik30ut0s3y" path="res://systems/Rebind Button Script Module/RebindButton.gd" id="2_c5njb"]
+[ext_resource type="Shader" uid="uid://culs8n47dmngk" path="res://vfx/shaders/static.gdshader" id="4_kcaeb"]
+[ext_resource type="Shader" uid="uid://b0h5u2t3ua8lx" path="res://vfx/shaders/crt.gdshader" id="5_x2ujj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4kxuq"]
 atlas = ExtResource("2_3phpx")
@@ -27,21 +29,27 @@ expand_margin_right = 5.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3phpx"]
 
-[node name="MainMenu" type="CanvasLayer" unique_id=1317839880]
-script = ExtResource("1_h6sl1")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3phpx"]
+shader = ExtResource("4_kcaeb")
+shader_parameter/amount = 40.0
+shader_parameter/transparency = 1.0
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=29496978]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_abyub"]
+shader = ExtResource("5_x2ujj")
+shader_parameter/brightnessMult = 1.0000000149012
+shader_parameter/wiggleMult = 0.009999999747
+shader_parameter/chromaticAberrationOffset = 0.00999999975
+
+[node name="MainMenu" type="CanvasLayer" unique_id=1317839880]
+process_mode = 3
+script = ExtResource("1_h6sl1")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=212658100]
 position = Vector2(160, 56)
 texture = SubResource("AtlasTexture_4kxuq")
 
-[node name="Timer" type="Label" parent="." unique_id=186031187]
+[node name="TimerLabel" type="Label" parent="." unique_id=186031187]
+unique_name_in_owner = true
 offset_left = 64.0
 offset_top = 96.0
 offset_right = 256.0
@@ -398,6 +406,33 @@ grow_horizontal = 0
 size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "BACK"
+
+[node name="Shader" type="Control" parent="." unique_id=1037402694]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Static" type="ColorRect" parent="Shader" unique_id=1710063856]
+material = SubResource("ShaderMaterial_3phpx")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CRT" type="ColorRect" parent="Shader" unique_id=172091519]
+material = SubResource("ShaderMaterial_abyub")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [connection signal="pressed" from="ButtonContainerSizer/ButtonContainer/Button_Play" to="." method="_on_button_play_pressed"]
 [connection signal="pressed" from="ButtonContainerSizer/ButtonContainer/Button_Settings" to="." method="_on_button_settings_pressed"]

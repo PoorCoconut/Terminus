@@ -123,6 +123,7 @@ var previous_velocity : Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	var saved_pos = GameManager.load_player_position()
+	print("Player _ready got saved_pos: ", saved_pos)
 	if saved_pos != null:
 		global_position = GameManager.load_player_position()
 
