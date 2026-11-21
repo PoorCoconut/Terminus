@@ -48,6 +48,13 @@ func updateState(_delta : float):
 			intensity = clamp(intensity, 0.0, 5.0) 
 			GameManager.do_camera_shake(intensity, 0.3)
 		
+		# Landed on a slope after a gravity switch -> StunFall, so the player slides off.
+		# (StunFall plays its own land sound/particles and clears the arc flags.)
+		if PLAYER.SLOPE_SLIDE_AFTER_FLIP and PLAYER.switched_in_arc \
+				and abs(PLAYER.get_floor_normal().x) > PLAYER.SLOPE_NORMAL_THRESHOLD:
+			transition.emit(self, "StunFall")
+			return
+		
 		# Landing after a gravity switch, hard enough -> StunFall-style landing effects
 		if PLAYER.switched_in_arc and fall_speed_before_impact >= PLAYER.HARD_LAND_SPEED:
 			_hard_land_effects()

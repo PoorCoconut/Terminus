@@ -83,6 +83,10 @@ var jump_charge_strength : float = 0.0
 ## Landing speed (px/s) at or above which a landing after a gravity switch plays the
 ## hard-land dust, particles and sound (like a StunFall landing). Higher = rarer.
 @export var HARD_LAND_SPEED : float = 250.0
+## Landing on a slope after a gravity switch drops you into StunFall so you slide off it.
+@export var SLOPE_SLIDE_AFTER_FLIP : bool = true
+## How tilted the floor normal's X must be to count as a slope (0 = flat, 1 = vertical wall).
+@export_range(0.0, 1.0, 0.01) var SLOPE_NORMAL_THRESHOLD : float = 0.1
 
 #HEAT GAUGE
 @export_category("HEAT GAUGE")
@@ -113,6 +117,7 @@ var previous_velocity : Vector2 = Vector2.ZERO
 #PARTICLES [GLOBAL]
 @onready var STEAM_PARTICLE := %Particle_Steam
 
+
 #SFX
 @onready var SFX_JUMP: AudioStreamPlayer = %sfx_jump
 @onready var SFX_LAND: AudioStreamPlayer = %sfx_hardLand
@@ -123,7 +128,6 @@ var previous_velocity : Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	var saved_pos = GameManager.load_player_position()
-	print("Player _ready got saved_pos: ", saved_pos)
 	if saved_pos != null:
 		global_position = GameManager.load_player_position()
 

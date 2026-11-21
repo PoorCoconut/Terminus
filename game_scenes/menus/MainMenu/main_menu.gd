@@ -37,6 +37,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			pause_game()
 
 func pause_game() -> void:
+	SoundBank.play_sfx("ui_pause")
 	if player:
 		GameManager.save_player_position(player.global_position)
 	get_tree().paused = true
@@ -44,6 +45,7 @@ func pause_game() -> void:
 	show()
 
 func resume_game() -> void:
+	SoundBank.play_sfx("ui_accept")
 	hide()
 	get_tree().paused = false
 	GameManager.start_timer()
@@ -52,6 +54,7 @@ func _on_button_play_pressed() -> void:
 	resume_game()
 
 func _on_button_settings_pressed() -> void:
+	SoundBank.play_sfx("ui_open")
 	%SettingsContainer.show()
 
 func _on_button_credits_pressed() -> void:
@@ -61,12 +64,14 @@ func _on_button_exit_pressed() -> void:
 	get_tree().quit()
 
 func _on_back_button_pressed() -> void:
+	SoundBank.play_sfx("ui_back")
 	%SettingsContainer.hide()
 	%WarningLabel.hide()
 	%NukeButton.hide()
 	%ResetButton.show()
 
 func _on_reset_button_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	%WarningLabel.show()
 	%NukeButton.show()
 	%ResetButton.hide()
@@ -84,6 +89,8 @@ func _on_slider_s_vol_value_changed(value: float) -> void:
 	SettingsManager.save_settings()
 
 func _on_nuke_button_pressed() -> void:
+	SoundBank.play_sfx("ui_delete")
+	
 	# 1. Reset confirmation UI
 	%WarningLabel.hide()
 	%NukeButton.hide()
@@ -104,36 +111,44 @@ func _on_nuke_button_pressed() -> void:
 	
 	# 4. Wipe save file, cached player position, AND GameManager.elapsed_time
 	GameManager.delete_save()
-	
+	GameManager.cam_enabled = false
 	# 5. Reload the scene so the Player & Camera physically reset to the start
 	
 	loading.play("in")
+	Events.file_deleted.emit()
 
 
 func _on_button_1080p_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	print("CLICKED 1080p BUTTON")
 	DisplayServer.window_set_size(Vector2i(1980, 1080))
 
 func _on_button_720p_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	print("CLICKED 720p BUTTON")
 	DisplayServer.window_set_size(Vector2i(1280, 720))
 
 func _on_button_540p_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	print("CLICKED 540p BUTTON")
 	DisplayServer.window_set_size(Vector2i(990, 540))
 
 func _on_button_windowed_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 func _on_button_fullscreen_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 func _on_button_exclusive_fullscreen_pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 
 ##CONTROLS SETTINGS AND STUFF
 @onready var action_list_container : GridContainer = %RebindContainer
 func _on_controls_reset_pressed() -> void:
+	SoundBank.play_sfx("ui_delete")
 	SettingsManager.reset_keybinds_to_default()
 
 

@@ -9,6 +9,7 @@ var brake_armed : bool = false
 var time_at_speed : float = 0.0
 
 func enterState():
+	%Particle_Spark.emitting = true
 	brake_armed = not Input.is_action_pressed("break")
 	time_at_speed = 0.0
 	PLAYER.SFX_CHARGE.pitch_scale = randf_range(0.8, 1.2)
@@ -59,4 +60,5 @@ func updateState(delta : float):
 		transition.emit(self, "Fall")
 
 func exitState():
+	%Particle_Spark.emitting = false
 	PLAYER.SFX_CHARGE.stop()

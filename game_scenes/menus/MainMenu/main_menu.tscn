@@ -134,7 +134,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=212658100]
-position = Vector2(160, 56)
+position = Vector2(160, 40)
 texture = SubResource("AtlasTexture_4kxuq")
 
 [node name="TimerLabel" type="Label" parent="." unique_id=186031187]

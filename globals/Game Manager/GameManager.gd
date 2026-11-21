@@ -8,6 +8,8 @@ var elapsed_time : float = 0.0
 var is_timer_running : bool = false
 var saved_player_pos = null # Holds Vector2 or null
 
+var cam_enabled : bool = true
+
 func _ready() -> void:
 	load_game()
 	print("GAME MANAGER LOADED!")
@@ -56,6 +58,7 @@ func save_game(player_pos = null) -> void:
 func load_game() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		print("No save file found. Starting from the bottom!")
+		cam_enabled = false
 		elapsed_time = 0.0
 		saved_player_pos = null
 		return

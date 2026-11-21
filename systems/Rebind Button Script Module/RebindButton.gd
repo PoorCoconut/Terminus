@@ -28,6 +28,7 @@ func _ready() -> void:
 	SettingsManager.keybinds_updated.connect(update_button_text)
 
 func _pressed() -> void:
+	SoundBank.play_sfx("ui_click")
 	is_listening = true
 	text = "Press any key..."
 
@@ -59,5 +60,6 @@ func update_button_text() -> void:
 	# Update visuals
 	if current_event != null:
 		text = current_event.as_text().trim_suffix(" - Physical")
+		
 	else:
 		text = "Unassigned"
