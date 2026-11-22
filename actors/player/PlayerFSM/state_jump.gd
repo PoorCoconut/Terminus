@@ -8,10 +8,12 @@ class_name StateJump
 
 var jump_time : float = 0.0
 var switched : bool = false # gravity already flipped during this jump
+var start_gravity_dir : float = 1.0
 
 func enterState():
 	jump_time = 0.0
 	switched = false
+	start_gravity_dir = PLAYER.gravity_dir
 	PLAYER.SFX_JUMP.pitch_scale = randf_range(0.8, 1.2)
 	PLAYER.SFX_JUMP.play()
 	PLAYER.in_arc = true
@@ -64,7 +66,12 @@ func updateState(delta : float):
 		transition.emit(self, "StunFall")
 		return
 	
-	# Gravity already flipped at takeoff (IMMEDIATE): we're just falling to the far surface
+	# Something ELSE flipped gravity mid-jump (a Gravity Truth zone): keep all momentum
+	# and just fall - don't treat the new gravity as an "apex" and zero the velocity.
+	if not switched and PLAYER.gravity_dir != start_gravity_dir:
+		switched = true
+	
+	# Gravity already flipped (takeoff / external): we're just falling to the far surface
 	if switched:
 		transition.emit(self, "Fall")
 		return

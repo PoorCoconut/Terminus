@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://j2bcgyj36r2n"]
+
+[ext_resource type="Script" uid="uid://cj6sfplh1etb3" path="res://systems/Gravity Truth Zone/gravity_truth_zone.gd" id="1_44tjs"]
+
+[sub_resource type="Curve" id="Curve_4kxuq"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.08979591, 1), 0.0, 0.0, 0, 0, Vector2(0.88571423, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Gradient" id="Gradient_imrxk"]
+offsets = PackedFloat32Array(0.85201794, 1)
+colors = PackedColorArray(1, 0.47058824, 0, 0.24705882, 1, 0.47058824, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_44tjs"]
+gradient = SubResource("Gradient_imrxk")
+fill = 2
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="Animation" id="Animation_k0avg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_imrxk"]
+resource_name = "glow_size"
+length = 10.0
+loop_mode = 1
+step = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TextureRect:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.95, 0.95)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bkfbr"]
+_data = {
+&"RESET": SubResource("Animation_k0avg"),
+&"glow_size": SubResource("Animation_imrxk")
+}
+
+[node name="GravityTruthZone" type="Area2D" unique_id=59232147 node_paths=PackedStringArray("particles")]
+script = ExtResource("1_44tjs")
+particles = NodePath("Particles")
+
+[node name="Particles" type="CPUParticles2D" parent="." unique_id=1168223777]
+unique_name_in_owner = true
+amount = 50
+randomness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(100, 100)
+direction = Vector2(0, 1)
+spread = 0.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 10.0
+initial_velocity_max = 50.0
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_4kxuq")
+color = Color(1, 0.47058824, 0, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=628918799]
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1882452207]
+offset_right = 320.0
+offset_bottom = 184.0
+pivot_offset = Vector2(160, 92)
+texture = SubResource("GradientTexture2D_44tjs")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1310206260]
+libraries/ = SubResource("AnimationLibrary_bkfbr")
+autoplay = &"glow_size"

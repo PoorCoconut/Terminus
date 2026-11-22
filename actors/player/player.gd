@@ -2,6 +2,7 @@ extends CharacterBody2D
 class_name Player
 
 signal gravity_flip_blocked # Emitted when a flip WOULD have happened but a lock stopped it
+signal gravity_forced(new_dir: float) # Emitted when a Gravity Truth zone force-flips the player
 
 enum JumpKind { STANDARD, NEEDLE, OVERHEAT }
 enum FlipTiming { APEX, IMMEDIATE, DELAYED }
@@ -241,3 +242,18 @@ func remove_gravity_lock() -> void:
 
 func can_flip_gravity() -> bool:
 	return GRAVITY_SWITCH_ENABLED and gravity_lock_count <= 0
+
+# ---------------------------------------------------------------- FORCED GRAVITY (Gravity Truth zones)
+# Sets gravity to `dir` (1 = down, -1 = up) immediately, KEEPING velocity (momentum).
+# Counts as a gravity-switch arc, so no stun on landing and flip-landing effects apply.
+func force_gravity(dir : float) -> void:
+	dir = -1.0 if dir < 0.0 else 1.0
+	if dir == gravity_dir:
+		return
+	flip_gravity()
+	hang_timer = 0.0
+	in_arc = true
+	switched_in_arc = true
+	if FLIP_SHAKE > 0.0:
+		GameManager.do_camera_shake(FLIP_SHAKE, 0.2)
+	gravity_forced.emit(gravity_dir)
