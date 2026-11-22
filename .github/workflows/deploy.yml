@@ -35,4 +35,3 @@ jobs:
           BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
         run: |
           butler push build/web poorcoco/terminus:html5
-```[cite: 5]
