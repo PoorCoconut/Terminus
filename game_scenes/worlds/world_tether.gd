@@ -3,6 +3,7 @@ extends Node2D
 @onready var cam : Camera2D = $WorldCameraComponent
 
 func _ready() -> void:
+	MusicManager.play_playlist()
 	Events.file_deleted.connect(_update_camera)
 	cam.enabled = GameManager.cam_enabled
 	print("Game Manager cam enabled is: ", GameManager.cam_enabled)

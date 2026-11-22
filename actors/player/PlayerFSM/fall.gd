@@ -29,7 +29,7 @@ func updateState(_delta : float):
 			var crash_speed = abs(PLAYER.previous_velocity.x)
 			var raw_bounce = crash_speed * 0.4
 			var final_bounce_force = clamp(raw_bounce, 10.0, PLAYER.BOUNCE_FORCE_X)
-			PLAYER.velocity.x = wall_normal.x * final_bounce_force
+			PLAYER.velocity.x = wall_normal.x * final_bounce_force * PLAYER.get_bounce_scale()
 			PLAYER.velocity.y = PLAYER.BOUNCE_FORCE_Y * PLAYER.gravity_dir
 			
 			

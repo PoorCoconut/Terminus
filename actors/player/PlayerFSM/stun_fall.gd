@@ -77,7 +77,7 @@ func updateState(_delta : float):
 		# Push them away from the wall
 		var crash_speed = abs(velocity_before_hit.x)
 		#PLAYER.velocity.x = wall_normal.x * crash_speed * 0.8
-		PLAYER.velocity.x = wall_normal.x * PLAYER.BOUNCE_FORCE_X
+		PLAYER.velocity.x = wall_normal.x * PLAYER.BOUNCE_FORCE_X * PLAYER.get_bounce_scale()
 		
 		# Pop them slightly up into the air
 		PLAYER.velocity.y = PLAYER.BOUNCE_FORCE_Y * PLAYER.gravity_dir

@@ -40,7 +40,7 @@ func enterState():
 			PLAYER.velocity.y = PLAYER.JUMP_SPEED * up
 	
 	# IMMEDIATE timing: flip the instant we leave the ground
-	if PLAYER.GRAVITY_SWITCH_ENABLED and PLAYER.FLIP_TIMING == Player.FlipTiming.IMMEDIATE:
+	if PLAYER.can_flip_gravity() and PLAYER.FLIP_TIMING == Player.FlipTiming.IMMEDIATE:
 		PLAYER.do_gravity_switch(false)
 		switched = true
 
@@ -55,7 +55,7 @@ func updateState(delta : float):
 	
 	if PLAYER.is_on_wall():
 		var wall_normal = PLAYER.get_wall_normal()
-		PLAYER.velocity.x = wall_normal.x * PLAYER.WALL_JUMP_VELX
+		PLAYER.velocity.x = wall_normal.x * PLAYER.WALL_JUMP_VELX * PLAYER.get_bounce_scale()
 		PLAYER.velocity.y = PLAYER.WALL_JUMP_VELY * PLAYER.gravity_dir
 		
 		PLAYER.SFX_WALL_BUMP.pitch_scale = randf_range(0.8, 1.2)
@@ -70,7 +70,7 @@ func updateState(delta : float):
 		return
 	
 	# DELAYED timing: flip after FLIP_DELAY (mid-rise, velocity untouched)
-	if PLAYER.GRAVITY_SWITCH_ENABLED and PLAYER.FLIP_TIMING == Player.FlipTiming.DELAYED \
+	if PLAYER.can_flip_gravity() and PLAYER.FLIP_TIMING == Player.FlipTiming.DELAYED \
 			and jump_time >= PLAYER.FLIP_DELAY:
 		PLAYER.do_gravity_switch(false)
 		switched = true
@@ -80,10 +80,12 @@ func updateState(delta : float):
 	# THE APEX SHIFT: vertical velocity has hit zero -> invert gravity and fall
 	# toward the opposite surface. (With the switch disabled it's a normal arc.)
 	if PLAYER.velocity.y * PLAYER.gravity_dir >= 0.0:
-		if PLAYER.GRAVITY_SWITCH_ENABLED:
+		if PLAYER.can_flip_gravity():
 			PLAYER.do_gravity_switch(true)
 		else:
-			PLAYER.velocity.y = 0.0
+			PLAYER.velocity.y = 0.0 # normal arc: just fall back down
+			if PLAYER.GRAVITY_SWITCH_ENABLED: # blocked by a Gravity Anchor zone
+				PLAYER.gravity_flip_blocked.emit()
 		transition.emit(self, "Fall")
 		return
 	

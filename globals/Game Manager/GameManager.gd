@@ -7,6 +7,7 @@ const SAVE_PATH : String = "user://savegame.json"
 var elapsed_time : float = 0.0
 var is_timer_running : bool = false
 var saved_player_pos = null # Holds Vector2 or null
+var saved_gravity_dir : float = 1.0 # 1 = normal, -1 = upside down
 
 var cam_enabled : bool = true
 
@@ -39,12 +40,15 @@ func get_formatted_time() -> String:
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]
 
 ## SAVE FILE LOGIC
-func save_game(player_pos = null) -> void:
+func save_game(player_pos = null, gravity_dir : float = 0.0) -> void:
 	if player_pos != null:
 		saved_player_pos = player_pos
+	if gravity_dir != 0.0: # 0.0 = "not given", keep the last saved value (e.g. on window close)
+		saved_gravity_dir = gravity_dir
 	
 	var save_data = {
-		"elapsed_time": elapsed_time
+		"elapsed_time": elapsed_time,
+		"gravity_dir": saved_gravity_dir
 	}
 	
 	if saved_player_pos != null:
@@ -61,6 +65,7 @@ func load_game() -> void:
 		cam_enabled = false
 		elapsed_time = 0.0
 		saved_player_pos = null
+		saved_gravity_dir = 1.0
 		return
 	
 	var file = FileAccess.open(SAVE_PATH, FileAccess.READ)
@@ -68,6 +73,7 @@ func load_game() -> void:
 	
 	if save_data:
 		elapsed_time = save_data.get("elapsed_time", 0.0)
+		saved_gravity_dir = -1.0 if float(save_data.get("gravity_dir", 1.0)) < 0.0 else 1.0
 		if save_data.has("player_x") and save_data.has("player_y"):
 			saved_player_pos = Vector2(save_data["player_x"], save_data["player_y"])
 
@@ -75,6 +81,7 @@ func delete_save() -> void:
 	is_timer_running = false
 	elapsed_time = 0.0
 	saved_player_pos = null
+	saved_gravity_dir = 1.0
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)
 		print("Save file deleted!")
@@ -83,11 +90,14 @@ func has_save_file() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
 # Wrappers so your existing Player script calls still work seamlessly
-func save_player_position(player_pos: Vector2) -> void:
-	save_game(player_pos)
+func save_player_position(player_pos: Vector2, gravity_dir : float = 1.0) -> void:
+	save_game(player_pos, gravity_dir)
 
 func load_player_position():
 	return saved_player_pos
+
+func load_player_gravity() -> float:
+	return saved_gravity_dir
 
 ## Next Level Helper Functions
 func load_next_level(next_level_path : String) -> void:

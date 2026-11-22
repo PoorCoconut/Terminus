@@ -2,10 +2,36 @@
 
 [ext_resource type="Script" uid="uid://cu4cmygusntwq" path="res://globals/Music Manager/music_manager.gd" id="1_kwnxt"]
 [ext_resource type="Script" uid="uid://ok7aycfrhu2f" path="res://systems/Custom Music Track Resource/MusicTrack.gd" id="2_cfotr"]
-[ext_resource type="Resource" uid="uid://cf6wh5r475byb" path="res://sound/music/example_track.tres" id="3_jxerq"]
-[ext_resource type="Resource" uid="uid://cfha3wc0frq7a" path="res://sound/music/example_track2.tres" id="4_ll68j"]
+[ext_resource type="AudioStream" uid="uid://l0xgyouhw615" path="res://sound/music/strawberry_candy-aggressive-metal-music-metalize-635620.mp3" id="3_2rjpu"]
+[ext_resource type="AudioStream" uid="uid://dnhphcfo3swbv" path="res://sound/music/strawberry_candy-intense-heavy-metal-affliction-582060.mp3" id="4_vglro"]
+[ext_resource type="AudioStream" uid="uid://ddibpgn6amoet" path="res://sound/music/strawberry_candy-powerful-heavy-metal-heavy-force-572627.mp3" id="5_ilgn7"]
+[ext_resource type="AudioStream" uid="uid://cp66vk6xbupp4" path="res://sound/music/strawberry_candy-sport-intense-metal-fast-and-strong-622134.mp3" id="6_1oab0"]
+
+[sub_resource type="Resource" id="Resource_jxerq"]
+script = ExtResource("2_cfotr")
+track_name = "metal1"
+stems = Array[AudioStream]([ExtResource("3_2rjpu")])
+metadata/_custom_type_script = "uid://ok7aycfrhu2f"
+
+[sub_resource type="Resource" id="Resource_2hrvq"]
+script = ExtResource("2_cfotr")
+track_name = "metal2"
+stems = Array[AudioStream]([ExtResource("4_vglro")])
+metadata/_custom_type_script = "uid://ok7aycfrhu2f"
+
+[sub_resource type="Resource" id="Resource_ll68j"]
+script = ExtResource("2_cfotr")
+track_name = "metal3"
+stems = Array[AudioStream]([ExtResource("5_ilgn7")])
+metadata/_custom_type_script = "uid://ok7aycfrhu2f"
+
+[sub_resource type="Resource" id="Resource_vglro"]
+script = ExtResource("2_cfotr")
+track_name = "metal4"
+stems = Array[AudioStream]([ExtResource("6_1oab0")])
+metadata/_custom_type_script = "uid://ok7aycfrhu2f"
 
 [node name="MusicManager" type="Node" unique_id=1495717072]
 process_mode = 3
 script = ExtResource("1_kwnxt")
-music_tracks = Array[ExtResource("2_cfotr")]([ExtResource("3_jxerq"), ExtResource("4_ll68j")])
+music_tracks = Array[ExtResource("2_cfotr")]([SubResource("Resource_jxerq"), SubResource("Resource_2hrvq"), SubResource("Resource_ll68j"), SubResource("Resource_vglro")])

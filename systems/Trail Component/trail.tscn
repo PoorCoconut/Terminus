@@ -10,6 +10,5 @@ point_count = 2
 top_level = true
 width = 5.0
 width_curve = SubResource("Curve_5uqgn")
-default_color = Color(0, 1, 1, 1)
 script = ExtResource("1_t6xsy")
 MAX_LENGTH = 20

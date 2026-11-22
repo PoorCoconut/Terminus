@@ -1,6 +1,8 @@
 extends CharacterBody2D
 class_name Player
 
+signal gravity_flip_blocked # Emitted when a flip WOULD have happened but a lock stopped it
+
 enum JumpKind { STANDARD, NEEDLE, OVERHEAT }
 enum FlipTiming { APEX, IMMEDIATE, DELAYED }
 
@@ -54,6 +56,13 @@ var jump_charge_strength : float = 0.0
 @export var WALL_JUMP_VELY : float = -80
 @export var BOUNCE_FORCE_X : float = 50.0 # How far they bounce back
 @export var BOUNCE_FORCE_Y : float = -10.0 
+## Each CONSECUTIVE wall bounce keeps this fraction of the previous bounce's X force
+## (1.0 = no decay, 0.6 = each bounce is 40% weaker, 0.0 = only the first bounce pushes).
+@export_range(0.0, 1.0, 0.01) var BOUNCE_X_DECAY : float = 0.6
+## Seconds without a wall bounce before the streak resets to full-strength bounces.
+@export var BOUNCE_STREAK_RESET_TIME : float = 1.0
+## Bounce X force can't be decayed below this fraction of the full force (0 = can fade to nothing).
+@export_range(0.0, 1.0, 0.01) var BOUNCE_X_MIN_SCALE : float = 0.0
 
 #FALL
 @export_category("FALL SETTINGS")
@@ -108,6 +117,14 @@ var hang_timer : float = 0.0  # Counts down zero-gravity hang after an apex flip
 var switched_in_arc : bool = false # Gravity was actually flipped during this arc
 var jump_kind : JumpKind = JumpKind.STANDARD # Set by whoever transitions to "Jump"
 
+#GRAVITY LOCKS (Gravity Anchor zones). >0 means flipping is disallowed.
+var gravity_lock_count : int = 0
+
+#WALL BOUNCE STREAK
+var bounce_streak : int = 0
+var _last_bounce_msec : int = -1000000
+var _last_bounce_scale : float = 1.0
+
 var direction : float = 1.0
 
 #Helper Variables
@@ -130,6 +147,10 @@ func _ready() -> void:
 	var saved_pos = GameManager.load_player_position()
 	if saved_pos != null:
 		global_position = GameManager.load_player_position()
+	
+	# Restore saved gravity (upside down) without the flip effects/state changes
+	if GameManager.load_player_gravity() != gravity_dir:
+		flip_gravity()
 
 func _physics_process(delta: float) -> void:
 	# print("PLAYER VELOCITY X: ", velocity.x, ", Y: ", velocity.y)
@@ -191,3 +212,32 @@ func end_arc() -> void:
 	if is_overheated:
 		is_overheated = false
 		STEAM_PARTICLE.emitting = false
+
+# ---------------------------------------------------------------- WALL BOUNCE STREAK
+# Call ONCE per wall hit. Returns the multiplier to apply to that bounce's X force:
+# 1.0 for the first bounce, then BOUNCE_X_DECAY^n for each consecutive one.
+# The streak resets after BOUNCE_STREAK_RESET_TIME seconds without a bounce.
+# Hits within 0.1s of each other count as the same bounce (no double-counting while
+# still touching the wall).
+func get_bounce_scale() -> float:
+	var now = Time.get_ticks_msec()
+	var since = now - _last_bounce_msec
+	if since < 100:
+		return _last_bounce_scale
+	if since > BOUNCE_STREAK_RESET_TIME * 1000.0:
+		bounce_streak = 0
+	_last_bounce_scale = max(pow(BOUNCE_X_DECAY, bounce_streak), BOUNCE_X_MIN_SCALE)
+	bounce_streak += 1
+	_last_bounce_msec = now
+	return _last_bounce_scale
+
+# ---------------------------------------------------------------- GRAVITY LOCKS
+# Zones call add/remove (a counter, so overlapping zones work correctly).
+func add_gravity_lock() -> void:
+	gravity_lock_count += 1
+
+func remove_gravity_lock() -> void:
+	gravity_lock_count = max(0, gravity_lock_count - 1)
+
+func can_flip_gravity() -> bool:
+	return GRAVITY_SWITCH_ENABLED and gravity_lock_count <= 0

@@ -39,7 +39,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func pause_game() -> void:
 	SoundBank.play_sfx("ui_pause")
 	if player:
-		GameManager.save_player_position(player.global_position)
+		GameManager.save_player_position(player.global_position, player.gravity_dir)
 	get_tree().paused = true
 	GameManager.stop_timer(true)
 	show()
